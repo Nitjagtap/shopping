@@ -17,11 +17,12 @@ const logger = require("../helpers/logger");
  */
 const authentication = async (req, res, next) => {
 	try {
+		console.log(req.headers)
 		let token = req.headers.authorization.replace("Bearer ", "");
 		const dToken = decodeToken(token);
-
+		console.log(dToken)
 		// If token is decoded then it will have id. Else it will throw error
-		if (dToken.id) {
+		if (dToken.empid) {
 			// Creating connection
 			const con = new Connection();
 			await con.connect();

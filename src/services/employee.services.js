@@ -82,7 +82,7 @@ const login = async(con,body)=>{
 		}
 
 		// Generate and update token.
-		const token = generateToken(record.id);
+		const token = generateToken(record.empid);
 		response.data = (
 			await con.execute(
 				`UPDATE ${EMPLOYEES} 
