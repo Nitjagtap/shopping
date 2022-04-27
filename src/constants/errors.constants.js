@@ -23,7 +23,7 @@ const makeError = (code, message, statusCode) => {
 exports.ER_API_NOT_FOUND = makeError("ER_API_NOT_FOUND", "API you are trying to access, does not exist.", 400);
 exports.ER_BAD_REQUEST = makeError("ER_BAD_REQUEST", "Bad request.", 400);
 exports.ER_USER_BLOCKED = makeError("ER_USER_BLOCKED", "This user has been blocked. Please contact support.", 401);
-exports.ER_UNAUTHENTICATED_USER = makeError("ER_UNAUTHENTICATED_USER", "This api request was unauthenticated. Please login to continue.", 401);
+exports.ER_UNAUTHENTICATED_EMPLOYEE = makeError("ER_UNAUTHENTICATED_EMPLOYEE", "This api request was unauthenticated. Please login to continue.", 401);
 
 // TYPE METHODS
 exports.ER_FIELD_EMPTY = (field) => makeError("ER_FIELD_EMPTY", `"${field}" field cannot be empty.`, 406);

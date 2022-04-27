@@ -41,6 +41,62 @@ const register = async (req , res , next)=>{
     }
 };
 
+/**
+ * Login employee - controller
+ * @param {object} req
+ * @param {object} res
+ * @param {object} next
+ */
+const login = async (req, res, next) => {
+	const con = new Connection();
+	await con.connect();
+	await con.begin();
+
+	try {
+		// Validations
+		if (!req.body.emp_email) throw ER_FIELD_EMPTY("emp_email");
+		if (!req.body.password) throw ER_FIELD_EMPTY("password");
+
+		const response = await employeeService.login(con, req.body);
+
+		await con.commit();
+		con.release();
+
+		res.send(response);
+	} catch (error) {
+		await con.rollback();
+		con.release();
+
+		next(error);
+	}
+};
+
+/**
+ * Logout employee - controller
+ * @param {object} req
+ * @param {object} res
+ * @param {object} next
+ */
+ const logout = async (req, res, next) => {
+	const con = req._con;
+	await con.begin();
+
+	try {
+		const response = await employeeService.logout(con, req._empid);
+
+		await con.commit();
+		con.release();
+
+		res.send(response);
+	} catch (error) {
+		await con.rollback();
+		con.release();
+
+		next(error);
+	}
+};
 module.exports = {
     register,
-}
+    login,
+    logout
+};

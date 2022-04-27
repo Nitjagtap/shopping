@@ -1,10 +1,10 @@
 "use strict";
 
 // IMPORTS ==================================================================================================
-const { ER_UNAUTHENTICATED_USER } = require("../constants/errors.constants");
+const { ER_UNAUTHENTICATED_EMPLOYEE } = require("../constants/errors.constants");
 const Connection = require("../includes/database_connection");
 const { decodeToken } = require("../helpers/jwt");
-const { USERS } = require("../constants/tables.constants");
+const { EMPLOYEES } = require("../constants/tables.constants");
 const logger = require("../helpers/logger");
 
 // METHODS ==================================================================================================
@@ -27,12 +27,12 @@ const authentication = async (req, res, next) => {
 			await con.connect();
 			// Fetching user data
 			const records = await con.execute(
-				`SELECT id FROM ${USERS} WHERE token='${token}'`,
+				`SELECT empid FROM ${EMPLOYEES} WHERE token='${token}'`,
 			);
 			
 			// Checking if user exists
 			if (records.rowCount === 1) {
-				req._id = records.rows[0].id;
+				req._empid = records.rows[0].empid;
 				req._con = con;
 				return next();
 			}
@@ -41,14 +41,14 @@ const authentication = async (req, res, next) => {
 		}
 
 		// If the code comes here then there is some issue in decoding token. Hence, user is not authenticated.
-		throw ER_UNAUTHENTICATED_USER;
+		throw ER_UNAUTHENTICATED_EMPLOYEE;
 	} catch (error) {
 		// If there is any error then user is not authenticated.
-		logger.error(ER_UNAUTHENTICATED_USER.code);
-		res.status(ER_UNAUTHENTICATED_USER.statusCode).send({
-			errorCode: ER_UNAUTHENTICATED_USER.code,
-			statusCode: ER_UNAUTHENTICATED_USER.statusCode,
-			message: ER_UNAUTHENTICATED_USER.message,
+		logger.error(ER_UNAUTHENTICATED_EMPLOYEE.code);
+		res.status(ER_UNAUTHENTICATED_EMPLOYEE.statusCode).send({
+			errorCode: ER_UNAUTHENTICATED_EMPLOYEE.code,
+			statusCode: ER_UNAUTHENTICATED_EMPLOYEE.statusCode,
+			message: ER_UNAUTHENTICATED_EMPLOYEE.message,
 			data: {},
 		});
 	}
