@@ -95,8 +95,69 @@ const login = async (req, res, next) => {
 		next(error);
 	}
 };
+
+/**
+ * Update user - controller
+ * @param {object} req
+ * @param {object} res
+ * @param {object} next
+ */
+ const update = async (req, res, next) => {
+	const con = req._con;
+	await con.begin();
+
+	try {
+		const { emp_email, emp_name, emp_mobile, emp_national_id, blocked } = req.body;
+		// Check if email is passed
+		if (!emp_email) throw ER_FIELD_EMPTY("emp_email");
+		// Check if at least one of the following set items is passed.
+		if (!emp_name && !emp_mobile && !emp_national_id && !emp_email && !blocked)
+			throw ER_MISSING_FIELDS("emp_name, emp_mobile, emp_email, emp_national_id, blocked");
+
+		let response = await employeeService.update(con, req.body);
+
+		await con.commit();
+		con.release();
+
+		res.send(response);
+	} catch (error) {
+		await con.rollback();
+		con.release();
+
+		next(error);
+	}
+};
+/**
+ * User Update Password - controller
+ * @param {object} req
+ * @param {object} res
+ * @param {object} next
+ */
+ const UpdatePassword = async (req, res, next) => {
+	const con = new Connection();
+	await con.connect();
+	await con.begin();
+
+	try {
+		const response = await employeeService.UpdatePassword(con, req.body);
+
+		await con.commit();
+		con.release();
+
+		res.send(response);
+	} catch (error) {
+		await con.rollback();
+		con.release();
+
+		next(error);
+	}
+};
+
+
 module.exports = {
     register,
     login,
-    logout
+    logout,
+	update,
+	UpdatePassword
 };

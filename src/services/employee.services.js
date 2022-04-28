@@ -115,10 +115,72 @@ const login = async(con,body)=>{
 	return response;
 };
 
+/**
+ * Update user - Service
+ * @param {object} con
+ * @param {object} body
+ * @returns
+ */
+ const update = async (con, body) => {
+	let response = {
+		message: "Employee Updated.",
+	};
+
+	// Destructure body
+	const { emp_name, emp_email, emp_mobile, emp_national_id, blocked } = body;
+
+	// forming set variables and combining to string
+	let set = [];
+	if (emp_name) set.push(`emp_name = '${emp_name}'`);
+	if (emp_email) set.push(`emp_email = '${emp_email}'`);
+	if (emp_mobile) set.push(`emp_mobile = '${emp_mobile}'`);
+    if (emp_national_id) set.push(`emp_national_id = '${emp_national_id}'`);
+	if (blocked) set.push(`blocked = '${blocked}'`);
+	set = set.join(", ");
+
+	// Fire query
+	response.data = await con.execute(`
+		UPDATE ${EMPLOYEES} 
+		SET ${set} 
+		WHERE emp_email = '${emp_email}'
+		RETURNING empid, emp_email, emp_name, emp_mobile, emp_national_id, blocked`
+		);
+
+	// Error of entered email was wrong
+	if (response.data.rowCount === 0) throw ER_DATA_NOT_FOUND("employee");
+
+	// Finally return
+	if (response.data.rows) response.data = response.data.rows;
+	return response;
+}; 
+/**
+ * User Update Password - service
+ * @param {object} con
+ * @param {object} body
+ * @returns
+ */
+ const UpdatePassword = async (con, body) => {
+	const response = {
+		message: "Password successfully updated.",
+	};
+
+	response.data = await con.execute(`
+		UPDATE ${EMPLOYEES}
+		SET password = '${body.password}', token = ''
+		WHERE emp_email = '${body.emp_email}'
+		RETURNING empid, emp_name, emp_national_id,emp_mobile`
+		);
+
+	if (response.data.rowCount === 0) throw ER_DATA_NOT_FOUND("employee");
+
+	return response;
+};
+
 // EXPORTS ==================================================================================================
 module.exports = {
     register,
     login,
-    logout
-
+    logout,
+    update,
+	UpdatePassword
 };

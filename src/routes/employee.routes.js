@@ -8,7 +8,9 @@ const router = new Router();
 
 router.post("/register", employeeController.register);
 router.post("/login", employeeController.login);
+router.put("/update-password", employeeController.UpdatePassword);
 
 router.get("/logout", authentication, employeeController.logout);
+router.put("/update",authentication,employeeController.update);
 
 module.exports = router;
